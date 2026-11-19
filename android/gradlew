@@ -1,11 +1,30 @@
 #!/usr/bin/env sh
-APP_BASE_NAME=`basename "$0"`
-APP_HOME=`cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P` || exit 1
+
+APP_BASE_NAME=$(basename "$0")
+APP_HOME=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P) || exit 1
+CLASSPATH="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
+
+# Keep the quotes in this value: eval below interprets them as argument
+# boundaries. Expanding this variable directly would pass the quote
+# characters to Java and cause "-Xmx64m" to be treated as the main class.
 DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
-if [ -n "$JAVA_HOME" ]; then
-  JAVACMD="$JAVA_HOME/bin/java"
+
+if [ -n "${JAVA_HOME:-}" ]; then
+    if [ -x "$JAVA_HOME/jre/bin/java" ]; then
+        JAVACMD="$JAVA_HOME/jre/bin/java"
+    else
+        JAVACMD="$JAVA_HOME/bin/java"
+    fi
 else
-  JAVACMD=java
-  command -v java >/dev/null 2>&1 || { echo "JAVA_HOME is not set and no java command was found." >&2; exit 1; }
+    JAVACMD=java
+    if ! command -v "$JAVACMD" >/dev/null 2>&1; then
+        echo "ERROR: JAVA_HOME is not set and no 'java' command could be found." >&2
+        exit 1
+    fi
 fi
-exec "$JAVACMD" $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS -Dorg.gradle.appname=$APP_BASE_NAME -classpath "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" org.gradle.wrapper.GradleWrapperMain "$@"
+
+# Re-parse JVM option strings into positional arguments, preserving the
+# wrapper's own arguments and allowing quoted values in JAVA_OPTS/GRADLE_OPTS.
+eval "set -- $DEFAULT_JVM_OPTS ${JAVA_OPTS:-} ${GRADLE_OPTS:-} \"-Dorg.gradle.appname=$APP_BASE_NAME\" -classpath \"$CLASSPATH\" org.gradle.wrapper.GradleWrapperMain \"\$@\""
+
+exec "$JAVACMD" "$@"
