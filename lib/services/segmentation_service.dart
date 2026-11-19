@@ -53,6 +53,10 @@ class SegmentationService {
       options: SubjectSegmenterOptions(
         enableForegroundConfidenceMask: true,
         enableForegroundBitmap: false,
+        enableMultipleSubjects: SubjectResultOptions(
+          enableConfidenceMask: false,
+          enableSubjectBitmap: false,
+        ),
       ),
     );
   }
